@@ -24,7 +24,7 @@ fill_color <- "#F39200"
 
 google_sheet_url <- ""
 source(here("configurations.R"))
-
+print(google_sheet_url)
 ## print configurations
 ##google_sheet_url
 
@@ -146,7 +146,7 @@ search_results_pop |>
     labs(
         title = "Age of found networks",
         caption = "Source: REF TO COLLECTED DATA",
-        subtitle = str_c("found ",no_year," without year of establisment)")
+        subtitle = str_c("found ",no_year," without year of establisment")
     ) +
     ylab("Count") +
     xlab("Age") +
@@ -155,6 +155,11 @@ search_results_pop |>
 
 ggsave(here("output",str_c("age", output_format)))
 
+search_results_pop |> 
+    filter(!is.na(`Year of establishment`)) |> 
+    mutate(age = 2023 - as.numeric(`Year of establishment`)) |>
+    filter(age > 21) |> 
+    count()
 
 search_results_pop |> 
     filter(!is.na(`Year of establishment`)) |> 
@@ -171,7 +176,7 @@ search_results_pop |>
     labs(
         title = "Age of found networks younger than 21",
         caption = "Source: REF TO COLLECTED DATA",
-        subtitle = str_c("found ",no_year," without year of establisment)")
+        subtitle = str_c("found ",no_year," without year of establisment")
     ) +
     ylab("Count") +
     xlab("Age") +
