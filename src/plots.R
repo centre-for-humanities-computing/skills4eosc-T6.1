@@ -53,9 +53,9 @@ search_results |>
 
 
 search_results |>
-    select(`Competences`) |>
-    mutate(`Competences` = str_replace_all(`Competences`, ",", "\n")) |>
-    unnest_tokens(competency, Competences, token = "lines") |>
+    select(`OS topics`) |>
+    mutate(`OS topics` = str_replace_all(`OS topics`, ",", "\n")) |>
+    unnest_tokens(competency, `OS topics`, token = "lines") |>
     mutate(competency = str_trim(competency)) |>
     group_by(competency) |>
     summarise(n = n()) |>
