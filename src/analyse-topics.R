@@ -151,6 +151,6 @@ search_results_pop |>
         axis.title.y=element_blank(),
         axis.ticks.y=element_blank())
 
-ggsave("dist-topics.png")
+ggsave("output/dist-topics.png")
 
 
