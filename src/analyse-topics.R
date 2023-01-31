@@ -7,6 +7,7 @@ library(here)
 ## output format
 output_format <- ".pdf"
 fill_color <- "#F39200"
+reference_text <- "Source: Collected data"
 
 ## Skills4eosc colors
 ## Orange: #F39200
@@ -33,7 +34,7 @@ super_topics <-
         google_sheet_url,
         sheet = "OS Topics",
         skip = 0,
-        col_types = "ccccc"
+        col_types = "ccccccc"
     ) |>
     mutate(
         os_topic = str_to_lower(`OS Topic`),
@@ -44,7 +45,7 @@ super_topics <-
 ## Need to manually select the "See, edit, create and delete all your
 ## Google Sheets spreadsheets. Learn more" option when authenticating.
 ## Also tidy the search results on OS Topics
-read_sheet(
+tokenized_results <- read_sheet(
         google_sheet_url,
         sheet = "Networks",
         skip = 0,
@@ -52,27 +53,7 @@ read_sheet(
     ) |>
     mutate(`OS topics` = str_to_lower(str_replace_all(`OS topics`, ",", "\n"))) |>
     unnest_tokens(os_topic, `OS topics`, token = "lines") |>
-    mutate(os_topic = str_trim(os_topic)) -> tokenized_results
-
-
-
-search_results |>
-    mutate(`OS topics` = str_to_lower(str_replace_all(`OS topics`, ",", "\n"))) |>
-    unnest_tokens(os_topic, `OS topics`, token = "lines") |>
-    mutate(os_topic = str_trim(os_topic)) -> tokenized_results
-
-## tokenized_results |>
-##     left_join(super_topics, by="os_topic") |>
-##     select(`Country`, `Country Code`, pmd_super_topic) |>
-##     count(pmd_super_topic) |>
-##     arrange(desc(n)) |>
-##     print(n=179)
-
-## tokenized_results |>
-##     left_join(super_topics, by="os_topic") |>
-##     filter(is.na(pmd_super_topic)) |>
-##     select(`Name of network (English)`, `Country`, os_topic, pmd_super_topic)
-
+    mutate(os_topic = str_trim(os_topic))
 
 ## join the tidy search results with the normalized topics
 tokenized_results |>
@@ -101,7 +82,7 @@ non_national <- search_results_pop |>
 ## count the number of found networks for each country. This is
 ## to enable having frequencies instead of absolute numbers
 ## in the graphics.
-search_results |> count(`Country Code`) -> network_counts
+tokenized_results |> count(`Country Code`) -> network_counts
 
 
 ## Non-normalized plot
@@ -115,7 +96,7 @@ search_results_pop |>
     coord_flip() +
     labs(
         title = "Distribution of topics",
-        caption = "Source: REF TO COLLECTED DATA",
+        caption = reference_text,
         fill = "OS Topic"
     ) +
     ylab("") +
@@ -136,7 +117,7 @@ search_results_pop |>
     labs(
         title = "Distribution of topics",
         subtitle = "Total number of found networks in parentheses",
-        caption = "Source: REF TO COLLECTED DATA",
+        caption = reference_text,
         fill = "OS Topic"
     ) +
     ylab("") +
@@ -149,8 +130,10 @@ search_results_pop |>
         axis.ticks.x=element_blank(),
         axis.line=element_blank(),
         axis.title.y=element_blank(),
-        axis.ticks.y=element_blank())
+        axis.ticks.y=element_blank()) -> dist_topics
 
-ggsave("output/dist-topics.png")
+dist_topics
+
+ggsave(here("output","dist-topics.png"), dist_topics, dpi="print")
 
 

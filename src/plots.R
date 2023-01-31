@@ -5,8 +5,9 @@ library(tidytext)
 library(here)
 
 ## output format
-output_format <- ".pdf"
+output_format <- ".png"
 fill_color <- "#F39200"
+reference_text <- "Source: Collected data"
 
 ## Skills4eosc colors
 ## Orange: #F39200
@@ -61,24 +62,6 @@ search_results |>
     summarise(n = n()) |>
     arrange(desc(n)) -> search_results_tokens
 
-## disable wordcloud - it's better in Julia
-## #install.packages("wordcloud")
-## library(wordcloud)
-## #install.packages("RColorBrewer")
-## library(RColorBrewer)
-## #install.packages("wordcloud2")
-## library(wordcloud2)
-
-## wordcloud(
-##   words = search_results_tokens$competency,
-##   freq = search_results_tokens$n,
-##   min.freq = 1,
-##   max.words = 200,
-##   random.order = FALSE,
-##   #rot.per = 0.35,
-##   colors = brewer.pal(8, "Dark2")
-##)
-
 library(ggthemes)
 
 non_national <- search_results_pop |>
@@ -96,15 +79,16 @@ search_results_pop|>
     coord_flip() +
     labs(
         title = "Number of found networks",
-        caption = "Source: REF TO COLLECTED DATA",
+        caption = reference_text,
         subtitle = str_c("found ", non_national," regional or international not included")
     ) +
     ylab("") +
     xlab("") +
-    scale_y_continuous(breaks=c(0,1,2,5,10,15,20,25), minor_breaks = NULL) +
+    ##scale_y_continuous(breaks=c(0,1,2,5,10,15,20,25), minor_breaks = NULL) +
+    scale_y_continuous(minor_breaks = NULL) +
     theme_light()
 
-ggsave(here("output",str_c("count-per-country", output_format)))
+ggsave(here("output",str_c("count-per-country", output_format)), dpi="print")
 
 search_results_pop|>
     filter(!is.na(`Country Name`)) |>
@@ -117,7 +101,7 @@ search_results_pop|>
        coord_flip() +
        labs(
            title = "Number of found networks per million people",
-           caption = "Source: REF TO COLLECTED DATA and World Bank Population data",
+           caption = reference_text,
            subtitle = str_c("found ", non_national," regional or international not included")
        ) +
        ylab("") +
@@ -125,7 +109,7 @@ search_results_pop|>
        scale_y_continuous(breaks=c(0,1,2,3,4,5,6,7), minor_breaks = NULL) +
     theme_light()
 
-ggsave(here("output",str_c("count-per-country-per-million", output_format)))
+ggsave(here("output",str_c("count-per-country-per-million", output_format)), dpi="print")
 
 no_year <- search_results |> 
     filter(is.na(`Year of establishment`)) |> 
@@ -145,7 +129,7 @@ search_results_pop |>
     ##coord_flip() +
     labs(
         title = "Age of found networks",
-        caption = "Source: REF TO COLLECTED DATA",
+        caption = reference_text,
         subtitle = str_c("found ",no_year," without year of establisment")
     ) +
     ylab("Count") +
@@ -153,7 +137,7 @@ search_results_pop |>
     scale_x_continuous(breaks=c(1,3,5,10,15,20,50,75,100), minor_breaks = NULL) +
     theme_light()
 
-ggsave(here("output",str_c("age", output_format)))
+ggsave(here("output",str_c("age", output_format)), dpi="print")
 
 search_results_pop |> 
     filter(!is.na(`Year of establishment`)) |> 
@@ -175,7 +159,7 @@ search_results_pop |>
     ##coord_flip() +
     labs(
         title = "Age of found networks younger than 21",
-        caption = "Source: REF TO COLLECTED DATA",
+        caption = reference_text,
         subtitle = str_c("found ",no_year," without year of establisment")
     ) +
     ylab("Count") +
@@ -183,4 +167,4 @@ search_results_pop |>
     scale_x_continuous(breaks=c(1,3,5,10,15,20,50,75,100), minor_breaks = NULL) +
     theme_light()
 
-ggsave(here("output",str_c("age-21", output_format)))
+ggsave(here("output",str_c("age-21", output_format)), dpi="print")
